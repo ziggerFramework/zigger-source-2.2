@@ -89,7 +89,13 @@ class Latest_fetch extends \Controller\Make_Controller {
 
             if (isset($tmb)) {
                 $fileinfo = Func::get_fileinfo($tmb);
-                $tmb = $fileinfo['replink'];
+
+                if ($fileinfo['storage'] == 'Y') {
+                    $tmb = $fileinfo['replink'];
+
+                } else {
+                    $tmb = PH_DOMAIN.MOD_BOARD_DATA_DIR.'/'.$FETCH_CONF['id'].'/thumb/'.$tmb;
+                }
 
             } else {
                 $tmb = SET_BLANK_IMG;
