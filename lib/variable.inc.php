@@ -135,3 +135,10 @@ $vars = explode('|', $CONF['mb_division']);
 for ($i=1; $i <= 10; $i++) {
     $MB['type'][$i] = $vars[$i - 1];
 }
+
+//업데이트 초기화 확인
+Func::chk_update_config_field(
+    array(
+        'use_sms', 'use_feedsms', 'sms_toadm', 'sms_from', 'sms_key1', 'sms_key2', 'sms_key3', 'sms_key4' //ver 2.2.1
+    )
+);

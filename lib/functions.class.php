@@ -2,8 +2,31 @@
 namespace Corelib;
 
 use Make\Database\Pdosql;
+use Make\Library\Sms;
 
 class Func {
+
+    static public function chk_update_config_field($fields)
+    {
+        global $CONF;
+
+        foreach ($fields as $key => $value) {
+
+            if (!isset($CONF[$value])) {
+                $sql = new Pdosql();
+                $sql->query(
+                    "
+                    INSERT INTO
+                    {$sql->table("config")}
+                    (cfg_type,cfg_key,cfg_value,cfg_regdate)
+                    VALUES
+                    ('engine','{$value}','',now())
+                    ", []
+                );
+            }
+
+        }
+    }
 
     static public function add_stylesheet($file)
     {
@@ -289,6 +312,8 @@ class Func {
     //관리자 최근 피드에 등록
     static public function add_mng_feed($arr)
     {
+        global $CONF;
+
         $sql = new Pdosql();
 
         $sql->query(
@@ -304,6 +329,20 @@ class Func {
                 $arr['link']
             )
         );
+
+        if ($CONF['use_feedsms'] == 'Y') {
+            $sms = new Sms();
+
+            $sms->set(
+                array(
+                    'memo' => '[zigger] '.strip_tags($arr['msg']),
+                    'to' => [
+                        $CONF['sms_toadm']
+                    ]
+                )
+            );
+            $sms->send();
+        }
     }
 
     //Captcha 출력 및 검증

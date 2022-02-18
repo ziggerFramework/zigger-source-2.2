@@ -47,6 +47,8 @@ class Sent extends \Controller\Make_Controller {
 
         if ($sql->getcount() > 0) {
             do {
+                $sql->nl2br = 1;
+                
                 $arr = $sql->fetchs();
 
                 $sql->nl2br = 0;

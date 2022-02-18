@@ -33,13 +33,6 @@ class Info extends \Controller\Make_Controller {
             return $setarr;
         }
 
-        function set_chked($arr, $field,$val)
-        {
-            if ($arr[$field] == $val) {
-                return 'checked';
-            }
-        }
-
         function mb_division($arr)
         {
             $ex = explode('|', $arr['mb_division']);
@@ -56,7 +49,7 @@ class Info extends \Controller\Make_Controller {
         $manage = new ManageFunc();
         $sql = new Pdosql();
 
-        $manage->make_target('사이트 기본 정보|기본 플러그인 사용 설정|정책 및 약관|외부 메일서버(SMTP) 설정|Object Storage(AWS S3) 설정|여분필드');
+        $manage->make_target('사이트 기본 정보|정책 및 약관|여분필드');
 
         $sql->query(
             "
@@ -131,11 +124,6 @@ class Info extends \Controller\Make_Controller {
         $this->set('print_target', $manage->print_target());
         $this->set('use_mobile', set_checked($arr, 'use_mobile'));
         $this->set('use_emailchk', set_checked($arr, 'use_emailchk'));
-        $this->set('use_recaptcha', set_checked($arr, 'use_recaptcha'));
-        $this->set('use_s3', set_checked($arr, 'use_s3'));
-        $this->set('use_sns_ka', set_checked($arr, 'use_sns_ka'));
-        $this->set('use_sns_nv', set_checked($arr, 'use_sns_nv'));
-        $this->set('use_smtp', set_checked($arr, 'use_smtp'));
         $this->set('mb_division', mb_division($arr));
         $this->set('write', $write);
     }
@@ -164,7 +152,7 @@ class Info_submit {
 
         Method::security('referer');
         Method::security('request_post');
-        $req = Method::request('post', 'title, domain, description, use_mobile, use_emailchk, use_recaptcha, recaptcha_key1, recaptcha_key2, use_sns_ka, sns_ka_key1, sns_ka_key2, use_sns_nv, sns_nv_key1, sns_nv_key2, email, tel, mb_division, theme, use_smtp, smtp_server, smtp_port, smtp_id, smtp_pwd, use_s3, s3_key1, s3_key2, s3_key3, s3_key4, s3_key5, script, privacy, policy, favicon_del, uploaded_favicon, logo_del, uploaded_logo, st_1, st_2, st_3, st_4, st_5, st_6, st_7, st_8, st_9, st_10, st_exp');
+        $req = Method::request('post', 'title, domain, description, use_mobile, use_emailchk, email, tel, mb_division, theme, privacy, policy, favicon_del, uploaded_favicon, logo_del, uploaded_logo, st_1, st_2, st_3, st_4, st_5, st_6, st_7, st_8, st_9, st_10, st_exp');
         $file = Method::request('file', 'favicon, logo');
         $manage->req_hidden_inp('post');
 
@@ -192,6 +180,220 @@ class Info_submit {
                 Valid::error('', '회원 등급별 명칭을 모두 입력해 주세요.');
             }
         }
+
+        $sql->query(
+            "
+            SELECT *
+            FROM {$sql->table("config")}
+            WHERE cfg_type='engine'
+            ", []
+        );
+
+        $arr = array();
+
+        do {
+            $arr[$sql->fetch('cfg_key')] = $sql->fetch('cfg_value');
+
+        } while($sql->nextRec());
+
+        $uploader->path= PH_DATA_PATH.'/manage';
+        $uploader->chkpath();
+
+        $favicon_name = '';
+
+        if ($file['favicon']['size'] > 0) {
+            $uploader->file = $file['favicon'];
+            $uploader->intdict = 'ico';
+
+            if ($uploader->chkfile('match') !== true) {
+                Valid::error('favicon','허용되지 않는 파비콘 유형입니다.');
+            }
+
+            $favicon_name = $uploader->replace_filename($file['favicon']['name']);
+
+            if (!$uploader->upload($favicon_name)) {
+                Valid::error('favicon', '파비콘 업로드 실패');
+            }
+        }
+
+        if (($file['favicon']['size'] > 0 && $arr['favicon'] != '') || $req['favicon_del'] == 'checked') {
+            $uploader->drop($arr['favicon']);
+        }
+        if ($arr['favicon'] != '' && !$file['favicon']['name'] && $req['favicon_del'] != 'checked') {
+            $favicon_name = $arr['favicon'];
+        }
+
+        $logo_name = '';
+
+        if ($file['logo']['size'] > 0) {
+            $uploader->file = $file['logo'];
+            $uploader->intdict = SET_IMGTYPE;
+            if ($uploader->chkfile('match') !== true) {
+                Valid::error('logo', '허용되지 않는 로고 유형입니다.');
+            }
+            $logo_name = $uploader->replace_filename($file['logo']['name']);
+            if (!$uploader->upload($logo_name)) {
+                Valid::error('logo', '로고 업로드 실패');
+            }
+        }
+        if (($file['logo']['size'] > 0 && $arr['logo'] != '') || $req['logo_del'] == 'checked') {
+            $uploader->drop($arr['logo']);
+        }
+        if ($arr['logo'] != '' && !$file['logo']['name'] && $req['logo_del'] != 'checked') {
+            $logo_name = $arr['logo'];
+        }
+
+        $mb_division = implode('|', $req['mb_division']);
+        $st_exp = $sql->etcfd_exp(implode('|', $req['st_exp']));
+
+        $data = array(
+            'title' => $req['title'],
+            'domain' => $req['domain'],
+            'description' => $req['description'],
+            'use_mobile' => $req['use_mobile'],
+            'use_emailchk' => $req['use_emailchk'],
+            'email' => $req['email'],
+            'tel' => $req['tel'],
+            'favicon' => $favicon_name,
+            'logo' => $logo_name,
+            'mb_division' => $mb_division,
+            'privacy' => $req['privacy'],
+            'policy' => $req['policy'],
+            'st_1' => $req['st_1'],
+            'st_2' => $req['st_2'],
+            'st_3' => $req['st_3'],
+            'st_4' => $req['st_4'],
+            'st_5' => $req['st_5'],
+            'st_6' => $req['st_6'],
+            'st_7' => $req['st_7'],
+            'st_8' => $req['st_8'],
+            'st_9' => $req['st_9'],
+            'st_10' => $req['st_10'],
+            'st_exp' => $st_exp
+        );
+
+        foreach ($data as $key => $value) {
+            $sql->query(
+                "
+                UPDATE
+                {$sql->table("config")}
+                SET
+                cfg_value=:col1
+                WHERE cfg_type='engine' AND cfg_key='{$key}'
+                ",
+                array(
+                    $value
+                )
+            );
+        }
+
+        Valid::set(
+            array(
+                'return' => 'alert->reload',
+                'msg' => '성공적으로 변경 되었습니다.'
+            )
+        );
+        Valid::turn();
+    }
+}
+
+/***
+Plugins
+***/
+class Plugins extends \Controller\Make_Controller {
+
+    public function init(){
+        $this->layout()->mng_head();
+        $this->layout()->view(PH_MANAGE_PATH.'/html/siteinfo/plugins.tpl.php');
+        $this->layout()->mng_foot();
+    }
+
+    public function func()
+    {
+        function set_checked($arr, $val)
+        {
+            $setarr = array(
+                'Y' => '',
+                'N' => ''
+            );
+            foreach ($setarr as $key => $value) {
+                if ($key == $arr[$val] || ($key == 'N' && !$arr[$val])) {
+                    $setarr[$key] = 'checked';
+                }
+            }
+            return $setarr;
+        }
+    }
+
+    public function make()
+    {
+        $manage = new ManageFunc();
+        $sql = new Pdosql();
+
+        $manage->make_target('reCaptcha 연동|SNS 로그인 API 관리|외부 SMTP(메일서버) 연동|Object Storage(AWS S3) 연동|SMS 문자발송(NCP SENS) 연동');
+
+        $sql->query(
+            "
+            SELECT *
+            FROM {$sql->table("config")}
+            WHERE cfg_type='engine'
+            ", []
+        );
+
+        $arr = array();
+
+        do {
+            $cfg = $sql->fetchs();
+            $arr[$cfg['cfg_key']] = $cfg['cfg_value'];
+
+        } while($sql->nextRec());
+
+        if (isset($arr)) {
+            foreach ($arr as $key => $value) {
+                $write[$key] = $value;
+            }
+
+        } else {
+            $write = null;
+        }
+
+        $this->set('manage', $manage);
+        $this->set('print_target', $manage->print_target());
+        $this->set('use_recaptcha', set_checked($arr, 'use_recaptcha'));
+        $this->set('use_s3', set_checked($arr, 'use_s3'));
+        $this->set('use_sns_ka', set_checked($arr, 'use_sns_ka'));
+        $this->set('use_sns_nv', set_checked($arr, 'use_sns_nv'));
+        $this->set('use_smtp', set_checked($arr, 'use_smtp'));
+        $this->set('use_sms', set_checked($arr, 'use_sms'));
+        $this->set('use_feedsms', set_checked($arr, 'use_feedsms'));
+        $this->set('write', $write);
+    }
+
+    public function form()
+    {
+        $form = new \Controller\Make_View_Form();
+        $form->set('id', 'pluginsForm');
+        $form->set('type', 'html');
+        $form->set('action', PH_MANAGE_DIR.'/siteinfo/plugins-submit');
+        $form->run();
+    }
+
+}
+
+/***
+Submit for Plugins
+***/
+class Plugins_submit {
+
+    public function init()
+    {
+        $sql = new Pdosql();
+        $manage = new ManageFunc();
+
+        Method::security('referer');
+        Method::security('request_post');
+        $req = Method::request('post', 'use_recaptcha, recaptcha_key1, recaptcha_key2, use_sns_ka, sns_ka_key1, sns_ka_key2, use_sns_nv, sns_nv_key1, sns_nv_key2, use_smtp, smtp_server, smtp_port, smtp_id, smtp_pwd, use_s3, s3_key1, s3_key2, s3_key3, s3_key4, s3_key5, use_sms, use_feedsms, sms_toadm, sms_from, sms_key1, sms_key2, sms_key3, sms_key4');
+        $manage->req_hidden_inp('post');
 
         if ($req['use_recaptcha'] == 'Y') {
             Valid::get(
@@ -298,6 +500,45 @@ class Info_submit {
             );
         }
 
+        if ($req['use_sms'] == 'Y') {
+            Valid::get(
+                array(
+                    'input' => 'sms_from',
+                    'value' => $req['sms_from']
+                )
+            );
+            Valid::get(
+                array(
+                    'input' => 'sms_key1',
+                    'value' => $req['sms_key1']
+                )
+            );
+            Valid::get(
+                array(
+                    'input' => 'sms_key2',
+                    'value' => $req['sms_key2']
+                )
+            );
+            Valid::get(
+                array(
+                    'input' => 'sms_key3',
+                    'value' => $req['sms_key3']
+                )
+            );
+            Valid::get(
+                array(
+                    'input' => 'sms_key4',
+                    'value' => $req['sms_key4']
+                )
+            );
+        }
+
+        if ($req['use_feedsms'] == 'Y') {
+            if ($req['use_sms'] != 'Y') {
+                Valid::error($req['use_sms'], '피드 SMS 발송을 위해선 SMS가 활성화 되어야 합니다.');
+            }
+        }
+
         $sql->query(
             "
             SELECT *
@@ -313,62 +554,7 @@ class Info_submit {
 
         } while($sql->nextRec());
 
-        $uploader->path= PH_DATA_PATH.'/manage';
-        $uploader->chkpath();
-
-        $favicon_name = '';
-
-        if ($file['favicon']['size'] > 0) {
-            $uploader->file = $file['favicon'];
-            $uploader->intdict = 'ico';
-
-            if ($uploader->chkfile('match') !== true) {
-                Valid::error('favicon','허용되지 않는 파비콘 유형입니다.');
-            }
-
-            $favicon_name = $uploader->replace_filename($file['favicon']['name']);
-
-            if (!$uploader->upload($favicon_name)) {
-                Valid::error('favicon', '파비콘 업로드 실패');
-            }
-        }
-
-        if (($file['favicon']['size'] > 0 && $arr['favicon'] != '') || $req['favicon_del'] == 'checked') {
-            $uploader->drop($arr['favicon']);
-        }
-        if ($arr['favicon'] != '' && !$file['favicon']['name'] && $req['favicon_del'] != 'checked') {
-            $favicon_name = $arr['favicon'];
-        }
-
-        $logo_name = '';
-
-        if ($file['logo']['size'] > 0) {
-            $uploader->file = $file['logo'];
-            $uploader->intdict = SET_IMGTYPE;
-            if ($uploader->chkfile('match') !== true) {
-                Valid::error('logo', '허용되지 않는 로고 유형입니다.');
-            }
-            $logo_name = $uploader->replace_filename($file['logo']['name']);
-            if (!$uploader->upload($logo_name)) {
-                Valid::error('logo', '로고 업로드 실패');
-            }
-        }
-        if (($file['logo']['size'] > 0 && $arr['logo'] != '') || $req['logo_del'] == 'checked') {
-            $uploader->drop($arr['logo']);
-        }
-        if ($arr['logo'] != '' && !$file['logo']['name'] && $req['logo_del'] != 'checked') {
-            $logo_name = $arr['logo'];
-        }
-
-        $mb_division = implode('|', $req['mb_division']);
-        $st_exp = $sql->etcfd_exp(implode('|', $req['st_exp']));
-
         $data = array(
-            'title' => $req['title'],
-            'domain' => $req['domain'],
-            'description' => $req['description'],
-            'use_mobile' => $req['use_mobile'],
-            'use_emailchk' => $req['use_emailchk'],
             'use_recaptcha' => $req['use_recaptcha'],
             'recaptcha_key1' => $req['recaptcha_key1'],
             'recaptcha_key2' => $req['recaptcha_key2'],
@@ -378,11 +564,6 @@ class Info_submit {
             'use_sns_nv' => $req['use_sns_nv'],
             'sns_nv_key1' => $req['sns_nv_key1'],
             'sns_nv_key2' => $req['sns_nv_key2'],
-            'email' => $req['email'],
-            'tel' => $req['tel'],
-            'favicon' => $favicon_name,
-            'logo' => $logo_name,
-            'mb_division' => $mb_division,
             'use_smtp' => $req['use_smtp'],
             'smtp_server' => $req['smtp_server'],
             'smtp_port' => $req['smtp_port'],
@@ -394,19 +575,14 @@ class Info_submit {
             's3_key3' => $req['s3_key3'],
             's3_key4' => $req['s3_key4'],
             's3_key5' => $req['s3_key5'],
-            'privacy' => $req['privacy'],
-            'policy' => $req['policy'],
-            'st_1' => $req['st_1'],
-            'st_2' => $req['st_2'],
-            'st_3' => $req['st_3'],
-            'st_4' => $req['st_4'],
-            'st_5' => $req['st_5'],
-            'st_6' => $req['st_6'],
-            'st_7' => $req['st_7'],
-            'st_8' => $req['st_8'],
-            'st_9' => $req['st_9'],
-            'st_10' => $req['st_10'],
-            'st_exp' => $st_exp
+            'use_sms' => $req['use_sms'],
+            'use_feedsms' => $req['use_feedsms'],
+            'sms_toadm' => $req['sms_toadm'],
+            'sms_from' => $req['sms_from'],
+            'sms_key1' => $req['sms_key1'],
+            'sms_key2' => $req['sms_key2'],
+            'sms_key3' => $req['sms_key3'],
+            'sms_key4' => $req['sms_key4']
         );
 
         foreach ($data as $key => $value) {

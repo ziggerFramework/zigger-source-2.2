@@ -158,7 +158,7 @@ class Search extends \Controller\Make_Controller {
                 $mod_arr[0]['href'] = PH_DOMAIN.'/'.$arr['href'];
 
                 if ($opt_exp[0] == 'board') {
-                    $mod_arr[0]['href'] = $mod_arr['href'].'?where=subject&keyword='.urlencode($req['keyword']);
+                    $mod_arr[0]['href'] = $mod_arr['href'].'?keyword='.urlencode($req['keyword']);
                 }
 
                 //모듈별 Database 처리

@@ -32,6 +32,11 @@ $(function() {
 
     if (href.indexOf('?') !== -1) {
         href = PH_DIR + href.replace(PH_DOMAIN, '', href);
+        href = href.replace(href.substr(href.indexOf('?')), '' ,href);
+    }
+    if (href.indexOf('#') !== -1) {
+        href = PH_DIR + href.replace(PH_DOMAIN, '', href);
+        href = href.replace(href.substr(href.indexOf('#')), '' ,href);
     }
     if (href.indexOf('/manage/mod') !== -1) {
         $('#side .tab a[data-tab="mod"]').click();

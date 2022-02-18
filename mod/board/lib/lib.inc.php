@@ -38,6 +38,11 @@ class Library {
         do {
             $cfg = $sql->fetchs();
 
+            $sql->specialchars = 0;
+            $sql->nl2br = 0;
+
+            $cfg['title'] = $sql->fetch('fetch');
+
             $conf[$cfg['cfg_key']] = $cfg['cfg_value'];
 
             if ($cfg['cfg_key'] == 'top_source' || $cfg['cfg_key'] == 'bottom_source' || $cfg['cfg_key'] == 'category') {

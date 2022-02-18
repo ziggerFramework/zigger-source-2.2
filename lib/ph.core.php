@@ -23,6 +23,7 @@ require_once PH_PATH.'/lib/paging.class.php';
 require_once PH_PATH.'/lib/uploader.class.php';
 require_once PH_PATH.'/lib/imgresize.class.php';
 require_once PH_PATH.'/lib/mail.class.php';
+require_once PH_PATH.'/lib/sms.class.php';
 require_once PH_PATH.'/lib/method.class.php';
 require_once PH_PATH.'/lib/valid.class.php';
 require_once PH_PATH.'/lib/controller.class.php';

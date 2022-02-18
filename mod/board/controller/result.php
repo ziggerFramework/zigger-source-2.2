@@ -276,7 +276,7 @@ class Result extends \Controller\Make_Controller {
         //where selectbox 선택 처리
         function where_slted($where)
         {
-            $arr = array('subject', 'article', 'writer', 'mb_id');
+            $arr = array('all', 'subjectAndArticle', 'subject', 'article', 'writer', 'mb_id');
             $opt = array();
 
             foreach ($arr as $key => $value) {
@@ -361,14 +361,38 @@ class Result extends \Controller\Make_Controller {
         $search = '';
 
         if ($category) {
-            $search = 'and board.category=\''.$req['category'].'\'';
+            $search = 'AND board.category=\''.$req['category'].'\'';
         }
 
         //검색 키워드 처리
         $keyword = htmlspecialchars(urlencode($req['keyword']));
-         if ($keyword) {
+
+        if ($keyword) {
             $keyword = urldecode($req['keyword']);
-            $search .= 'and board.'.$req['where'].' like \'%'.$req['keyword'].'%\'';
+            $where_arr = array('subject', 'article', 'writer', 'mb_id');
+
+            switch ($req['where']) {
+                case 'subjectAndArticle' :
+                    $search .= 'AND (';
+                    $search .= 'board.subject like \'%'.$req['keyword'].'%\'';
+                    $search .= 'OR board.article like \'%'.$req['keyword'].'%\'';
+                    $search .= ')';
+                    break;
+
+                case 'subject' :
+                case 'article' :
+                case 'writer' :
+                case 'mb_id' :
+                    $search .= 'AND board.'.$req['where'].' like \'%'.$req['keyword'].'%\'';
+                    break;
+
+                default :
+                    $search .= 'AND (';
+                    foreach ($where_arr as $key => $value) {
+                        $search .= ($key > 0 ? ' OR ' : '').'board.'.$value.' like \'%'.$req['keyword'].'%\'';
+                    }
+                    $search .= ')';
+            }
         }
 
         if ($boardconf['use_category'] == 'Y' && $boardconf['category'] != '') {

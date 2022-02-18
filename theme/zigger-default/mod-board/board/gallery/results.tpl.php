@@ -162,6 +162,8 @@
 	<input type="hidden" name="category" value="<?php echo $category; ?>" />
 
 	<select name="where" class="where">
+        <option value="all" <?php echo $where_slted['all']; ?>>전체</option>
+		<option value="subjectAndArticle" <?php echo $where_slted['subjectAndArticle']; ?>>제목+내용</option>
 		<option value="subject" <?php echo $where_slted['subject']; ?>>제목</option>
 		<option value="article" <?php echo $where_slted['article']; ?>>내용</option>
 		<option value="writer" <?php echo $where_slted['writer']; ?>>작성자</option>
