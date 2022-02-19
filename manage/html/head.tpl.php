@@ -27,6 +27,7 @@
                     <a href="#">기본 관리도구</a>
                     <ul>
                         <li><a href="<?php echo PH_MANAGE_DIR; ?>/siteinfo/info">기본정보 관리</a></li>
+                        <li><a href="<?php echo PH_MANAGE_DIR; ?>/siteinfo/plugins">플러그인 및 기능 설정</a></li>
                         <li><a href="<?php echo PH_MANAGE_DIR; ?>/siteinfo/seo">검색엔진 최적화</a></li>
                         <li><a href="<?php echo PH_MANAGE_DIR; ?>/siteinfo/sitemap">사이트맵 관리</a></li>
                     </ul>
