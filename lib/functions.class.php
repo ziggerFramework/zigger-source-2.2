@@ -12,7 +12,17 @@ class Func {
 
         foreach ($fields as $key => $value) {
 
-            if (!isset($CONF[$value])) {
+            $field_value = '';
+            $field_key = $value;
+
+            if (strstr($value, ':')) {
+                $val_exp = explode(':', $value);
+                $field_value = $val_exp[1];
+                $field_key = $val_exp[0];
+            }
+
+            if (!isset($CONF[$field_key])) {
+
                 $sql = new Pdosql();
                 $sql->query(
                     "
@@ -20,7 +30,7 @@ class Func {
                     {$sql->table("config")}
                     (cfg_type,cfg_key,cfg_value,cfg_regdate)
                     VALUES
-                    ('engine','{$value}','',now())
+                    ('engine','{$field_key}','{$field_value}',now())
                     ", []
                 );
             }

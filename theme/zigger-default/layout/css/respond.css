@@ -7,7 +7,8 @@
   /* Input */
   .inp.w100{width: 100%;}
   .inp.wfull{width: 100%;}
-  .inp.w50{min-width: 50%;}
+  .inp.w50{width: 50%;}
+  .inp.w33{width: 35%;}
   textarea{min-height: 100px;}
 
   /* Button */

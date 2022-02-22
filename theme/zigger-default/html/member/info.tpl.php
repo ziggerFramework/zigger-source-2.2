@@ -139,6 +139,8 @@
                             <input type="text" name="name" title="이름" class="inp w50" value="<?php echo $mb['mb_name']; ?>" />
                         </td>
                     </tr>
+
+                    <?php if ($siteconf['use_mb_gender'] != 'N') { ?>
                     <tr>
                         <th><em>*</em> 성별</th>
                         <td>
@@ -146,24 +148,69 @@
                             <label><input type="radio" name="gender" title="여자" value="F" <?php echo $gender_chked['F']; ?> />여자</label>
                         </td>
                     </tr>
-                    <tr>
-                        <th>휴대전화</th>
+                    <?php } ?>
+
+                    <?php if ($siteconf['use_mb_phone'] != 'N') { ?>
+                    <tr id="get-phone-check-wrap">
+                        <th><?php if ($siteconf['use_mb_phone'] == 'Y'){ ?><em>*</em> <?php } ?>휴대전화</th>
                         <td>
+
+                            <?php if ($siteconf['use_mb_phone'] != 'N' && $siteconf['use_phonechk'] == 'Y') { ?>
+                            <p class="phone_ed mb5"><?php echo $mb['mb_phone'] ? $mb['mb_phone'] : '등록된 휴대전화 없음' ; ?> <button type="button" class="btn2 small">변경</button></p>
+                            <div class="phone-chg-wrap" style="display: none;">
+                                <input type="hidden" name="phone_chg" value="0" />
+                                <input type="text" name="phone" title="휴대전화" class="inp w100 mb5" />
+                                <?php if ($siteconf['use_phonechk'] == 'Y' && $siteconf['use_sms'] == 'Y') { ?>
+                                <button type="button" class="btn1 small send-sms-code mb5">SMS 인증코드 발송</button>
+                                <?php } ?>
+                                <span class="tbltxt">
+                                    · 하이픈(-) 없이 숫자만 입력
+                                </span>
+
+                                <div id="confirm-sms-code-wrap" style="display: none;">
+                                    <input type="text" name="phone_code" id="phone_code" title="휴대전화 인증코드" placeholder="인증코드 입력" class="inp w33" />
+                                    <button type="button" class="btn1 small confirm-sms-code">인증코드 입력 완료</button>
+                                    <span class="tbltxt">
+                                        · SMS 발송된 6자리 인증코드 입력
+                                    </span>
+                                </div>
+                            </div>
+                            <?php } ?>
+
+                            <?php if ($siteconf['use_mb_phone'] != 'N' &&  $siteconf['use_phonechk'] == 'N') { ?>
                             <input type="text" name="phone" title="휴대전화" class="inp w100" value="<?php echo $mb['mb_phone']; ?>" />
                             <span class="tbltxt">
                                 · 하이픈(-) 없이 숫자만 입력
                             </span>
+                            <?php } ?>
+
                         </td>
                     </tr>
+                    <?php } ?>
+
+                    <?php if ($siteconf['use_mb_telephone'] != 'N') { ?>
                     <tr>
-                        <th>집전화</th>
+                        <th><?php if ($siteconf['use_mb_telephone'] == 'Y'){ ?><em>*</em> <?php } ?>전화번호</th>
                         <td>
-                            <input type="text" name="telephone" title="집전화" class="inp w100" value="<?php echo $mb['mb_telephone']; ?>" />
+                            <input type="text" name="telephone" title="전화번호" class="inp w100" value="<?php echo $mb['mb_telephone']; ?>" />
                             <span class="tbltxt">
                                 · 하이픈(-) 없이 숫자만 입력
                             </span>
                         </td>
                     </tr>
+                    <?php } ?>
+
+                    <?php if ($siteconf['use_mb_address'] != 'N') { ?>
+                    <tr id="get-address-search-wrap">
+                        <th><?php if ($siteconf['use_mb_address'] == 'Y'){ ?><em>*</em> <?php } ?>주소</th>
+                        <td>
+                            <input type="text" name="address1" id="address1" title="주소 - 우편번호" value="<?php echo $mb[0]['mb_address'][0]; ?>" placeholder="우편번호" class="inp w50" />
+                            <button type="button" class="btn1 small mb5 search-address-btn">주소검색</button><br />
+                            <input type="text" name="address2" id="address2" title="주소 - 기본주소" value="<?php echo $mb[0]['mb_address'][1]; ?>" placeholder="기본주소" class="inp w100 mb5" />
+                            <input type="text" name="address3" id="address3" title="주소 - 상세주소" value="<?php echo $mb[0]['mb_address'][2]; ?>" placeholder="상세주소" class="inp w100 mb5" />
+                        </td>
+                    </tr>
+                    <?php } ?>
                 </tbody>
             </table>
         </fieldset>
@@ -181,3 +228,12 @@
 
     </form>
 </div>
+
+<script type="text/javascript">
+$(function() {
+    $('#get-phone-check-wrap .phone_ed button').click(function() {
+        $('.phone-chg-wrap input[name=phone]').val('');
+        $('.phone-chg-wrap').toggle();
+    })
+})
+</script>

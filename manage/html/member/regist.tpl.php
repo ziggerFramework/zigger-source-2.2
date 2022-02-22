@@ -82,6 +82,14 @@
                     </td>
                 </tr>
                 <tr>
+                    <th>주소</th>
+                    <td>
+                        <input type="text" name="address1" class="inp w100" title="주소 - 우편번호" placeholder="우편번호" /><br />
+                        <input type="text" name="address2" class="inp w33p mt5" title="주소 - 기본주소" placeholder="기본주소" />
+                        <input type="text" name="address3" class="inp w33p mt5" title="주소 - 상세주소" placeholder="상세주소" />
+                    </td>
+                </tr>
+                <tr>
                     <th>point</th>
                     <td>
                         <input type="text" name="point" class="inp w100" title="point" value="0" />

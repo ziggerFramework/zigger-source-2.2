@@ -153,7 +153,7 @@ $(function() {
 });
 
 ///
-// theme.tpl.php
+// siteinfo/theme.tpl.php
 ///
 $(function() {
     $('#themeForm input[name=theme_slt]').on({
@@ -165,7 +165,7 @@ $(function() {
 });
 
 ///
-// sitemap.tpl.php
+// siteinfo/sitemap.tpl.php
 ///
 var sitemap_list = {
     'init' : function() {
@@ -350,7 +350,7 @@ $(function() {
 });
 
 ///
-// send.tpl.php
+// mailler/send.tpl.php
 ///
 $(function(){
     $('#sendmailForm input[name=type]').on({
@@ -360,3 +360,68 @@ $(function(){
         }
     });
 });
+
+///
+// sms/tomember.tpl.php
+///
+$(function(){
+
+    //내용 byte수 체크
+    var get_sms_memobyte = function(val) {
+        var bytes = val.replace(/[\0-\x7f]|([0-\u07ff]|(.))/g,"$&$1$2").length;
+        bytes = parseInt(bytes);
+
+        $btn_txt = $('#smsSendForm button[type=submit] > strong');
+
+        if (bytes >= 80) {
+            $btn_txt.text('LMS');
+        } else {
+            $btn_txt.text('SMS');
+        }
+
+        if ($('#smsSendForm input[name=image]').val() != '') {
+            $btn_txt.text('MMS');
+        }
+
+        return bytes;
+    }
+    var get_sms_timer;
+    var get_sms_printbyte = function() {
+        if (get_sms_timer) {
+            clearTimeout(get_sms_timer);
+        }
+        $('#smsSendForm .print_byte > strong > strong').text(get_sms_memobyte($('#smsSendForm #memo').val()));
+        get_sms_timer = setTimeout(get_sms_printbyte, 100);
+    }
+    get_sms_timer = setTimeout(get_sms_printbyte, 100);
+
+    //수신 범위 지장
+    $('#smsSendForm input[name=type]').on({
+        'click' : function(e){
+            var type = $(this).val();
+            $('#smsSendForm table tr.hd-tr[data-type='+type+']').show().siblings('.hd-tr').hide();
+        }
+    });
+
+    //예약 발송 설정
+    var get_sms_resv = function(type) {
+        if (type == 'show') {
+            $('#smsSendForm .resv-wrap *').attr('disabled', false);
+
+        } else if (type == 'hide') {
+            $('#smsSendForm .resv-wrap *').attr('disabled', true);
+        }
+    }
+    $('#smsSendForm .resv-btn').on({
+        'click' : function() {
+            var chked = $(this).find(':checkbox').prop('checked');
+            if (chked == true) {
+                get_sms_resv('show');
+
+            } else {
+                get_sms_resv('hide');
+            }
+        }
+    })
+    get_sms_resv('hide');
+})

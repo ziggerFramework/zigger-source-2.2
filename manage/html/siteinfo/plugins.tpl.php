@@ -14,7 +14,7 @@
         <table class="table1">
             <thead>
                 <tr>
-                    <th colspan="2" class="tal">reCaptcha 연동</th>
+                    <th colspan="2" class="tal">Google reCaptcha 연동</th>
                 </tr>
             </thead>
             <tbody>

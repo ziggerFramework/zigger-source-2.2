@@ -41,6 +41,11 @@
 
 .tbl_sment{position: relative;display: block;padding-left:10px;margin-top: 10px;font-size: 12px;letter-spacing: -1px;line-height: 18px;color: #999999;}
 .tbl_sment:before{position: absolute;top: 8px;left: 1px;content: '';display: block;width: 4px;height: 1px;background: #999999;border-radius: 50%;}
+.tbl_sment a{vertical-align: top;}
+
+table .article-wait{padding: 15px 0;margin-bottom: 10px;font-size: 16px;}
+table .article-wait i{font-size: 30px;margin-bottom: 10px;}
+table .article-wait a{vertical-align: top;}
 
 /* Input */
 .inp{width: 250px;border: 1px solid #dddddd;font-size: 13px;height: 30px;line-height: 30px;color: #000000;padding: 0 5px;background: #faf9f9;border: 1px solid #d0cfcf;border-right-color:#ededed;border-bottom-color:#ededed;box-sizing: border-box;}
@@ -179,6 +184,12 @@ textarea{width: 100%;height: 200px;border: 1px solid #dddddd;font-size: 13px;lin
 #dashboard .news-wrap .box td em{display: inline-block;line-height: 15px;width: 15px;text-align: center;background: #d41720;border-radius: 15px;color: #ffffff;font-size: 10px;font-weight: bold;color: #fff;font-family: Arial;font-style: normal;margin-right: 4px;}
 
 /* Contents */
+.article-wait{display: block;border: 2px dashed #dddddd;border-radius: 5px;padding: 30px 0;text-align: center;font-size: 18px;letter-spacing: -1px;color: #333333;margin-bottom: 20px;}
+.article-wait i{font-size: 50px;color: #dddddd;display: block;margin: 0 auto;margin-bottom: 20px;}
+.article-wait em{display: block;font-style: normal;text-align: center;font-size: 12px;color: #999999;margin-top: 5px;}
+.article-wait em strong,
+.article-wait em a{font-weight: normal;color: #000 !important;text-decoration: none;}
+
 .fileview{position: relative;margin-top: 10px;background: #f7f7f7;padding: 15px 15px 15px 130px;min-height: 50px;}
 .fileview dt{position: absolute;top: 15px;left: 15px;}
 .fileview dt:before{content: '';display: inline-block;vertical-align: middle;width: 0;height: 50px;}

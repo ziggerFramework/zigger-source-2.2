@@ -98,6 +98,19 @@
                     </ul>
                 </li>
                 <li>
+                    <a href="#">SMS발송</a>
+                    <ul>
+                        <li><a href="<?php echo PH_MANAGE_DIR; ?>/sms/tomember">회원 SMS 발송</a></li>
+                        <li><a href="<?php echo PH_MANAGE_DIR; ?>/sms/send">비회원 SMS 발송</a></li>
+                        <li>
+                            <a
+                            href="<?php echo PH_MANAGE_DIR; ?>/sms/history"
+                            data-idx-href="<?php echo PH_MANAGE_DIR; ?>/sms/historyview"
+                            >SMS 발송 내역</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
                     <a href="#">접속 차단</a>
                     <ul>
                         <li><a href="<?php echo PH_MANAGE_DIR; ?>/block/ip">아이피 접속 차단</a></li>

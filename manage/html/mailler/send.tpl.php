@@ -18,9 +18,9 @@
                 <tr>
                     <th>발송 종류</th>
                     <td>
-                        <label><input type="radio" name="type" value="1" checked />특정 회원 지정</label>
+                        <label><input type="radio" name="type" value="1" checked /> 특정 회원 지정</label>
                         &nbsp;&nbsp;&nbsp;
-                        <label><input type="radio" name="type" value="2" />수신 범위 지정</label>
+                        <label><input type="radio" name="type" value="2" /> 수신 범위 지정</label>
                     </td>
                 </tr>
                 <tr data-type="1" class="hd-tr">

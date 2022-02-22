@@ -3,7 +3,7 @@ $SCHEME_CORE = "
 
 CREATE TABLE IF NOT EXISTS {$req['pfx']}banner (
     idx int(11) NOT NULL auto_increment,
-    bn_key varchar(255) BINARY NOT NULL,
+    bn_key varchar(255) NOT NULL,
     pc_img text,
     mo_img text,
     title varchar(255) NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS {$req['pfx']}mbpoint (
 CREATE TABLE IF NOT EXISTS {$req['pfx']}member (
     mb_adm char(1) default 'N',
     mb_idx int(11) NOT NULL auto_increment,
-    mb_id varchar(255) BINARY NOT NULL,
+    mb_id varchar(255) NOT NULL,
     mb_email varchar(255) NOT NULL,
     mb_pwd text NOT NULL,
     mb_name varchar(255) default NULL,
@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS {$req['pfx']}member (
     mb_gender char(1) default 'M',
     mb_phone varchar(255) default NULL,
     mb_telephone varchar(255) default NULL,
+    mb_address text default NULL,
     mb_lately datetime default NULL,
     mb_lately_ip varchar(255) default NULL,
     mb_point int(11) default '0',
@@ -114,7 +115,7 @@ CREATE TABLE IF NOT EXISTS {$req['pfx']}mng_feeds (
 
 CREATE TABLE IF NOT EXISTS {$req['pfx']}popup (
     idx int(11) NOT NULL auto_increment,
-    id varchar(255) BINARY NOT NULL,
+    id varchar(255) NOT NULL,
     title varchar(255) NOT NULL,
     link text,
     link_target varchar(255) default NULL,
@@ -134,7 +135,7 @@ CREATE TABLE IF NOT EXISTS {$req['pfx']}popup (
 
 CREATE TABLE IF NOT EXISTS {$req['pfx']}sentmail (
     idx int(11) NOT NULL auto_increment,
-    template varchar(255) BINARY default NULL,
+    template varchar(255) default NULL,
     to_mb varchar(255) default NULL,
     level_from int(11) default NULL,
     level_to int(11) default NULL,
@@ -143,6 +144,23 @@ CREATE TABLE IF NOT EXISTS {$req['pfx']}sentmail (
     regdate datetime default NULL,
     PRIMARY KEY  (idx)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS {$req['pfx']}sentsms (
+    idx int(11) NOT NULL auto_increment,
+    sendtype varchar(255) DEFAULT NULL,
+    to_mb varchar(255) DEFAULT NULL,
+    to_phone text DEFAULT NULL,
+    level_from int(11) DEFAULT NULL,
+    level_to int(11) DEFAULT NULL,
+    subject text DEFAULT NULL,
+    memo text DEFAULT NULL,
+    use_resv text DEFAULT NULL,
+    resv_date text DEFAULT NULL,
+    resv_hour text DEFAULT NULL,
+    resv_min text DEFAULT NULL,
+    regdate datetime DEFAULT NULL,
+    PRIMARY KEY  (idx)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS {$req['pfx']}session (
     idx int(11) NOT NULL auto_increment,
@@ -215,6 +233,11 @@ INSERT INTO {$req['pfx']}config (cfg_type, cfg_key, cfg_value, cfg_regdate) VALU
 ('engine', 'sms_key2', '', now()),
 ('engine', 'sms_key3', '', now()),
 ('engine', 'sms_key4', '', now()),
+('engine', 'use_mb_phone', 'N', now()),
+('engine', 'use_phonechk', 'N', now()),
+('engine', 'use_mb_telephone', 'N', now()),
+('engine', 'use_mb_address', 'N', now()),
+('engine', 'use_mb_gender', 'N', now()),
 ('engine', 'st_1', '', now()),
 ('engine', 'st_2', '', now()),
 ('engine', 'st_3', '', now()),

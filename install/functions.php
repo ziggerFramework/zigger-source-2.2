@@ -7,7 +7,7 @@ function permschk($dir)
 function phpversions()
 {
     $version = (string)phpversion();
-    if ($version > '5.3.0') {
+    if ($version > '5.5.0') {
         return true;
     } else {
         return false;

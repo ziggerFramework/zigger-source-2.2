@@ -33,6 +33,7 @@
             <col style="width: 150px;" />
             <col style="width: auto;" />
             <col style="width: auto;" />
+            <col style="width: auto;" />
             <col style="width: 100px;" />
             <col style="width: auto;" />
             <col style="width: auto;" />
@@ -46,6 +47,7 @@
                 <th><a href="<?php echo $manage->orderlink("mb_level"); ?>">회원등급</a></th>
                 <th><a href="<?php echo $manage->orderlink("mb_id"); ?>">id</a></th>
                 <th><a href="<?php echo $manage->orderlink("mb_email"); ?>">email</a></th>
+                <th><a href="<?php echo $manage->orderlink("mb_phone"); ?>">phone</a></th>
                 <th><a href="<?php echo $manage->orderlink("mb_email_chk"); ?>">email 인증</a></th>
                 <th><a href="<?php echo $manage->orderlink("mb_name"); ?>">이름</a></th>
                 <th><a href="<?php echo $manage->orderlink("mb_point"); ?>">point</a></th>
@@ -59,8 +61,13 @@
             <tr>
                 <td class="no tac"><?php echo $list['no']; ?></td>
                 <td class="tac"><?php echo $list['mb_level']; ?> (<?php echo $MB['type'][$list['mb_level']]; ?>)</td>
-                <td><strong><?php echo $list['mb_id']?></strong></td>
-                <td><a href="./?href=sendmail&mailto=<?php echo $list['mb_id']; ?>"><?php echo $list['mb_email']; ?></a></td>
+                <td class="tac"><strong><?php echo $list['mb_id']?></strong></td>
+                <td class="tac"><a href="../mailler/send?mailto=<?php echo $list['mb_id']; ?>"><?php echo $list['mb_email']; ?></a></td>
+                <td class="tac">
+                    <?php if ($list['mb_phone']) { ?>
+                    <a href="../sms/tomember?smsto=<?php echo $list['mb_id']; ?>"><?php echo $list['mb_phone']; ?></a>
+                    <?php } ?>
+                </td>
                 <td class="tac"><?php echo $list['mb_email_chk']; ?></td>
                 <td class="tac"><?php echo $list['mb_name']; ?></td>
                 <td class="tac"><?php echo $list['mb_point']; ?></td>

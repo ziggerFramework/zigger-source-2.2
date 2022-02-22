@@ -5,6 +5,7 @@ use Corelib\Session;
 use Corelib\Valid;
 use Make\Database\Pdosql;
 use Make\Library\Mail;
+use Make\Library\Sms;
 
 /***
 Sign in
@@ -198,9 +199,13 @@ class Signup extends \Controller\Make_Controller {
 
     public function make()
     {
+        global $CONF;
+
         if (IS_MEMBER) {
             Func::err_location(SET_ALRAUTH_MSG, PH_DOMAIN);
         }
+
+        $this->set('siteconf', $CONF);
     }
 
 }
@@ -219,7 +224,7 @@ class signup_submit {
 
         Method::security('referer');
         Method::security('request_post');
-        $req = Method::request('post', 'id, email, pwd, pwd2, name, gender, phone, telephone, policy, mb_1, mb_2, mb_3, mb_4, mb_5, mb_6, mb_7, mb_8, mb_9, mb_10');
+        $req = Method::request('post', 'id, email, pwd, pwd2, name, gender, phone, phone_code, telephone, address1, address2, address3, policy, mb_1, mb_2, mb_3, mb_4, mb_5, mb_6, mb_7, mb_8, mb_9, mb_10');
 
         if (IS_MEMBER) {
             Valid::error('', SET_ALRAUTH_MSG);
@@ -285,23 +290,104 @@ class signup_submit {
                 )
             )
         );
+
+        //휴대전화 번호 검사
+        $null = true;
+        if ($CONF['use_mb_phone'] == 'Y') {
+            $null = false;
+        }
         Valid::get(
             array(
                 'input' => 'phone',
                 'value' => $req['phone'],
                 'check' => array(
-                    'null' => true,
+                    'null' => $null,
                     'defined' => 'phone'
                 )
             )
         );
+
+        if ($CONF['use_phonechk'] == 'Y' && $CONF['use_sms'] == 'Y' && $req['phone']) {
+
+            //중복 확인
+            $sql->query(
+                "
+                SELECT *
+                FROM {$sql->table("member")}
+                WHERE mb_phone=:col1 AND mb_dregdate IS NULL
+                ",
+                array(
+                    $req['phone']
+                )
+            );
+            if ($sql->getcount() > 0) {
+                Valid::error('phone', '이미 등록된 휴대전화 번호입니다.');
+            }
+
+            //인증여부 확인
+            $sql->query(
+                "
+                SELECT *
+                FROM {$sql->table("mbchk")}
+                WHERE chk_code=:col1 AND chk_mode='pchk' AND chk_chk='Y' AND chk_dregdate IS NULL
+                ORDER BY chk_regdate DESC
+                LIMIT 1
+                ",
+                array(
+                    $req['phone'].':'.$req['phone_code']
+                )
+            );
+            if ($sql->getcount() < 1) {
+                Valid::error('phone', '인증되지 않은 휴대전화 번호입니다. 휴대전화를 인증해주세요.');
+            }
+
+        }
+
+        //전화번호 검사
+        $null = true;
+        if ($CONF['use_mb_telephone'] == 'Y') {
+            $null = false;
+        }
         Valid::get(
             array(
                 'input' => 'telephone',
                 'value' => $req['telephone'],
                 'check' => array(
-                    'null' => true,
+                    'null' => $null,
                     'defined' => 'phone'
+                )
+            )
+        );
+
+        //주소 검사
+        $null = true;
+        if ($CONF['use_mb_address'] == 'Y') {
+            $null = false;
+        }
+        Valid::get(
+            array(
+                'input' => 'address1',
+                'value' => $req['address1'],
+                'check' => array(
+                    'null' => $null
+                )
+            )
+        );
+        Valid::get(
+            array(
+                'input' => 'address2',
+                'value' => $req['address2'],
+                'check' => array(
+                    'null' => $null
+                )
+            )
+        );
+        Valid::get(
+            array(
+                'input' => 'address3',
+                'value' => $req['address3'],
+                'check' => array(
+                    'null' => $null
                 )
             )
         );
@@ -347,12 +433,12 @@ class signup_submit {
         $sql->query(
             "
             INSERT INTO {$sql->table("member")}
-            (mb_id,mb_email,mb_pwd,mb_name,mb_gender,mb_phone,mb_telephone,mb_email_chk,mb_regdate,mb_1,mb_2,mb_3,mb_4,mb_5,mb_6,mb_7,mb_8,mb_9,mb_10,mb_sns_ka,mb_sns_nv,mb_sns_ka_token,mb_sns_nv_token,mb_exp)
+            (mb_id,mb_email,mb_pwd,mb_name,mb_gender,mb_phone,mb_telephone,mb_address,mb_email_chk,mb_regdate,mb_1,mb_2,mb_3,mb_4,mb_5,mb_6,mb_7,mb_8,mb_9,mb_10,mb_sns_ka,mb_sns_nv,mb_sns_ka_token,mb_sns_nv_token,mb_exp)
             VALUES
-            (:col1,:col2,password(:col3),:col4,:col5,:col6,:col7,:col8,now(),:col9,:col10,:col11,:col12,:col13,:col14,:col15,:col16,:col17,:col18,:col19,:col20,:col21,:col22,:col23)
+            (:col1,:col2,password(:col3),:col4,:col5,:col6,:col7,:col8,:col9,now(),:col10,:col11,:col12,:col13,:col14,:col15,:col16,:col17,:col18,:col19,:col20,:col21,:col22,:col23,:col24)
             ",
             array(
-                $req['id'], $req['email'], $req['pwd'], $req['name'], $req['gender'], $req['phone'], $req['telephone'], $mbchk_var, $req['mb_1'], $req['mb_2'], $req['mb_3'], $req['mb_4'], $req['mb_5'], $req['mb_6'], $req['mb_7'], $req['mb_8'], $req['mb_9'], $req['mb_10'], '', '', '', '', $sql->etcfd_exp('')
+                $req['id'], $req['email'], $req['pwd'], $req['name'], $req['gender'], $req['phone'], $req['telephone'], $req['address1'].'|'.$req['address2'].'|'.$req['address3'], $mbchk_var, $req['mb_1'], $req['mb_2'], $req['mb_3'], $req['mb_4'], $req['mb_5'], $req['mb_6'], $req['mb_7'], $req['mb_8'], $req['mb_9'], $req['mb_10'], '', '', '', '', $sql->etcfd_exp('')
             )
         );
 
@@ -897,6 +983,143 @@ class Forgot_submit {
                 'return' => 'alert->location',
                 'msg' => '회원님의 이메일로 로그인 정보가 성공적으로 발송 되었습니다.',
                 'location' => PH_DOMAIN
+            )
+        );
+        Valid::turn();
+    }
+
+}
+
+/***
+Submit for phonechk
+***/
+class phonechk_submit {
+
+    public function init()
+    {
+        global $CONF;
+
+        Method::security('referer');
+        Method::security('request_post');
+        $req = Method::request('post', 'phone');
+
+        $sql = new Pdosql();
+        $sms = new Sms();
+
+        Valid::get(
+            array(
+                'input' => 'phone',
+                'value' => $req['phone'],
+                'check' => array(
+                    'null' => false,
+                    'defined' => 'phone'
+                )
+            )
+        );
+
+        //다른 회원이 사용중인 휴대전화 번호인지 검사
+        $sql->query(
+            "
+            SELECT *
+            FROM {$sql->table("member")}
+            WHERE mb_phone=:col1 AND mb_dregdate IS NULL
+            ",
+            array(
+                $req['phone']
+            )
+        );
+        if ($sql->getcount() > 0) {
+            Valid::error('phone', '이미 등록된 휴대전화 번호입니다.');
+        }
+
+        //코드 생성
+        $code = rand(100000,999999);
+
+        //DB insert
+        $sql->query(
+            "
+            INSERT INTO {$sql->table("mbchk")}
+            (mb_idx, chk_code, chk_mode, chk_chk, chk_regdate)
+            VALUES
+            (:col1, :col2, :col3, :col4, now())
+            ",
+            array(
+                0, $req['phone'].':'.$code, 'pchk', 'N'
+            )
+        );
+
+        //코드 SMS 발송
+        $sms->set(
+            array(
+                'to' => [
+                    $req['phone']
+                ],
+                'memo' => $CONF['title'].' - 인증코드 ['.$code.'] 를 입력해주세요.' //SMS로 발송할 문자메시지 내용
+            )
+        );
+        $sms->send();
+
+        //코드 발송 완료
+        Valid::set(
+            array(
+                'return' => 'callback',
+                'function' => 'Get_phonecheck_beforeConfirm()'
+            )
+        );
+        Valid::turn();
+    }
+
+}
+
+/***
+Submit for phonechk_confirm
+***/
+class phonechk_confirm_submit {
+
+    public function init()
+    {
+        global $CONF;
+
+        Method::security('referer');
+        Method::security('request_post');
+        $req = Method::request('post', 'phone, phone_code');
+
+        $sql = new Pdosql();
+
+        //코드 검증
+        $sql->query(
+            "
+            SELECT *
+            FROM {$sql->table("mbchk")}
+            WHERE chk_code=:col1 AND chk_mode='pchk' AND chk_dregdate IS NULL
+            ",
+            array(
+                $req['phone'].':'.$req['phone_code']
+            )
+        );
+
+        if ($sql->getcount() < 1) {
+            Valid::error('phone_code', '인증코드가 올바르지 않습니다.');
+        }
+
+
+        //코드 인증 처리
+        $sql->query(
+            "
+            UPDATE {$sql->table("mbchk")}
+            SET chk_chk='Y'
+            WHERE chk_code=:col1 AND chk_mode='pchk' AND chk_dregdate IS NULL
+            ",
+            array(
+                $req['phone'].':'.$req['phone_code']
+            )
+        );
+
+        //코드 검증 완료
+        Valid::set(
+            array(
+                'return' => 'callback',
+                'function' => 'Get_phonecheck_afterConfirm()'
             )
         );
         Valid::turn();

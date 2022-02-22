@@ -92,12 +92,75 @@
                         <?php } ?>
                     </td>
                 </tr>
+            </tbody>
+        </table>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="submit" class="btn1"><i class="fa fa-check"></i> 변경완료</button>
+            </div>
+        </div>
+
+        <?php echo $print_target[1]; ?>
+
+        <table class="table1">
+            <thead>
+                <tr>
+                    <th colspan="2" class="tal">회원가입 입력 항목 설정</th>
+                </tr>
+            </thead>
+            <tbody>
                 <tr>
                     <th>회원 이메일 인증</th>
                     <td>
                         <label class="mr10"><input type="radio" name="use_emailchk" value="Y" <?php echo $use_emailchk['Y']; ?> /> 사용</label>
                         <label><input type="radio" name="use_emailchk" value="N" <?php echo $use_emailchk['N']; ?> /> 사용안함</label>
-                        <span class="tbl_sment">회원 이메일 인증 기능이 활성화 된 경우 이메일 인증을 완료한 회원만 가입 완료됨</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>휴대전화 입력</th>
+                    <td>
+                        <label class="mr10"><input type="radio" name="use_mb_phone" value="Y" <?php echo $use_mb_phone['Y']; ?> /> 필수입력</label>
+                        <label class="mr10"><input type="radio" name="use_mb_phone" value="O" <?php echo $use_mb_phone['O']; ?> />  선택입력</label>
+                        <label><input type="radio" name="use_mb_phone" value="N" <?php echo $use_mb_phone['N']; ?> /> 사용안함</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>휴대전화 인증</th>
+                    <td>
+                        <?php if ($write['use_sms'] != 'Y') { ?>
+                        <p class="article-wait">
+                            <i class="fa fa-info-circle"></i>
+                            SMS 문자(NCP SENS) 발송 기능이 비활성화 되어 있습니다.
+                            <em>'<a href="<?php echo PH_MANAGE_DIR; ?>/siteinfo/plugins">기본 관리도구 &gt; 플러그인 및 기능 설정</a>' 에서 설정 후 이용해 주시길 바랍니다.</em>
+                        </p>
+                        <?php } ?>
+                        <label class="mr10"><input type="radio" name="use_phonechk" value="Y" <?php echo $use_phonechk['Y']; ?> /> SMS 번호인증 사용</label>
+                        <label class="mr10"><input type="radio" name="use_phonechk" value="N" <?php echo $use_phonechk['N']; ?> /> SMS 번호인증 사용안함</label>
+                        <span class="tbl_sment">휴대전화 인증이 활성화한 경우 회원가입 및 정보수정시 SMS 문자를 통한 본인 인증 수행</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>전화번호 입력</th>
+                    <td>
+                        <label class="mr10"><input type="radio" name="use_mb_telephone" value="Y" <?php echo $use_mb_telephone['Y']; ?> /> 필수입력</label>
+                        <label class="mr10"><input type="radio" name="use_mb_telephone" value="O" <?php echo $use_mb_telephone['O']; ?> />  선택입력</label>
+                        <label><input type="radio" name="use_mb_telephone" value="N" <?php echo $use_mb_telephone['N']; ?> /> 사용안함</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>주소 입력</th>
+                    <td>
+                        <label class="mr10"><input type="radio" name="use_mb_address" value="Y" <?php echo $use_mb_address['Y']; ?> /> 필수입력</label>
+                        <label class="mr10"><input type="radio" name="use_mb_address" value="O" <?php echo $use_mb_address['O']; ?> />  선택입력</label>
+                        <label><input type="radio" name="use_mb_address" value="N" <?php echo $use_mb_address['N']; ?> /> 사용안함</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>성별 선택</th>
+                    <td>
+                        <label class="mr10"><input type="radio" name="use_mb_gender" value="Y" <?php echo $use_mb_gender['Y']; ?> /> 사용</label>
+                        <label class="mr10"><input type="radio" name="use_mb_gender" value="N" <?php echo $use_mb_gender['N']; ?> /> 사용안함</label>
                     </td>
                 </tr>
                 <tr>
@@ -168,7 +231,7 @@
             </div>
         </div>
 
-        <?php echo $print_target[1]; ?>
+        <?php echo $print_target[2]; ?>
 
         <table class="table1">
             <thead>
@@ -199,7 +262,7 @@
         </div>
 
 
-        <?php echo $print_target[2]; ?>
+        <?php echo $print_target[3]; ?>
 
         <table class="table1">
             <thead>

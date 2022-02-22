@@ -6,7 +6,7 @@
     <li>
         <h5>기본 정보</h5>
         <span class="txt">
-            <strong class="black">박찬영</strong> 회원님
+            <strong class="black"><?php echo $MB['name']; ?></strong> 회원님
         </span>
         <a href="<?php echo PH_DIR; ?>/member/info" class="btn2">회원정보 변경<i class="fas fa-chevron-right"></i></a>
     </li>

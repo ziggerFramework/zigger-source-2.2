@@ -173,7 +173,7 @@ class Regist_submit {
 
         Method::security('referer');
         Method::security('request_post');
-        $req = Method::request('post', 'id, pwd, pwd2, name, level, gender, phone, telephone, point, email, email_chk, mb_1, mb_2, mb_3, mb_4, mb_5, mb_6, mb_7, mb_8, mb_9, mb_10, mb_exp');
+        $req = Method::request('post', 'id, pwd, pwd2, name, level, gender, phone, telephone, address1, address2, address3, point, email, email_chk, mb_1, mb_2, mb_3, mb_4, mb_5, mb_6, mb_7, mb_8, mb_9, mb_10, mb_exp');
         $manage->req_hidden_inp('post');
 
         Valid::get(
@@ -300,12 +300,12 @@ class Regist_submit {
         $sql->query(
             "
             INSERT INTO {$sql->table("member")}
-            (mb_id,mb_email,mb_pwd,mb_name,mb_level,mb_gender,mb_phone,mb_telephone,mb_email_chk,mb_regdate,mb_1,mb_2,mb_3,mb_4,mb_5,mb_6,mb_7,mb_8,mb_9,mb_10,mb_exp)
+            (mb_id,mb_email,mb_pwd,mb_name,mb_level,mb_gender,mb_phone,mb_telephone,mb_address,mb_email_chk,mb_regdate,mb_1,mb_2,mb_3,mb_4,mb_5,mb_6,mb_7,mb_8,mb_9,mb_10,mb_exp)
             VALUES
-            (:col1,:col2,password(:col3),:col4,:col5,:col6,:col7,:col8,:col9,now(),:col10,:col11,:col12,:col13,:col14,:col15,:col16,:col17,:col18,:col19,:col20)
+            (:col1,:col2,password(:col3),:col4,:col5,:col6,:col7,:col8,:col9,:col10,now(),:col11,:col12,:col13,:col14,:col15,:col16,:col17,:col18,:col19,:col20,:col21)
             ",
             array(
-                $req['id'], $req['email'], $req['pwd'], $req['name'], $req['level'], $req['gender'], $req['phone'], $req['telephone'], $mbchk_var, $req['mb_1'], $req['mb_2'], $req['mb_3'], $req['mb_4'], $req['mb_5'], $req['mb_6'], $req['mb_7'], $req['mb_8'], $req['mb_9'], $req['mb_10'], $mb_exp
+                $req['id'], $req['email'], $req['pwd'], $req['name'], $req['level'], $req['gender'], $req['phone'], $req['telephone'], $req['address1'].'|'.$req['address2'].'|'.$req['address3'], $mbchk_var, $req['mb_1'], $req['mb_2'], $req['mb_3'], $req['mb_4'], $req['mb_5'], $req['mb_6'], $req['mb_7'], $req['mb_8'], $req['mb_9'], $req['mb_10'], $mb_exp
             )
         );
 
@@ -448,15 +448,23 @@ class Modify extends \Controller\Make_Controller {
             $arr[0]['mb_profileimg'] = $fileinfo['replink'];
         }
 
+        $arr[0]['mb_address'] = explode('|', $arr['mb_address']);
+
+        if (!$arr[0]['mb_address'][0]) {
+            $arr[0]['mb_address'][0] = null;
+            $arr[0]['mb_address'][1] = null;
+            $arr[0]['mb_address'][2] = null;
+        }
+
+        $arr['mb_regdate'] = Func::datetime($arr['mb_regdate']);
+        $arr['mb_lately'] = Func::datetime($arr['mb_lately']);
+
         $write = array();
 
         if (isset($arr)) {
             foreach ($arr as $key => $value){
                 $write[$key] = $value;
             }
-
-            $write['mb_regdate'] = Func::datetime($write['mb_regdate']);
-            $write['mb_lately'] = Func::datetime($write['mb_lately']);
 
         } else {
             $write = null;
@@ -493,7 +501,7 @@ class Modify_submit {
 
         Method::security('referer');
         Method::security('request_post');
-        $req = Method::request('post', 'mode, idx, pwd, pwd2, name, level, gender, phone, telephone, point, email, email_chk, mb_1, mb_2, mb_3, mb_4, mb_5, mb_6, mb_7, mb_8, mb_9, mb_10, mb_exp');
+        $req = Method::request('post', 'mode, idx, pwd, pwd2, name, level, gender, phone, telephone, point, email, address1, address2, address3, email_chk, mb_1, mb_2, mb_3, mb_4, mb_5, mb_6, mb_7, mb_8, mb_9, mb_10, mb_exp');
         $file = Method::request('file', 'profileimg');
         $manage->req_hidden_inp('post');
 
@@ -669,11 +677,11 @@ class Modify_submit {
             $sql->query(
                 "
                 UPDATE {$sql->table("member")}
-                SET mb_pwd=password(:col1),mb_name=:col2,mb_gender=:col3,mb_phone=:col4,mb_telephone=:col5,mb_point=:col6,mb_profileimg=:col7,mb_level=:col8,mb_email=:col9,mb_email_chk=:col10,mb_1=:col11,mb_2=:col12,mb_3=:col13,mb_4=:col14,mb_5=:col15,mb_6=:col16,mb_7=:col17,mb_8=:col18,mb_9=:col19,mb_10=:col20,mb_exp=:col21
-                WHERE mb_adm!='Y' AND mb_dregdate IS NULL AND mb_idx=:col22
+                SET mb_pwd=password(:col1),mb_name=:col2,mb_gender=:col3,mb_phone=:col4,mb_telephone=:col5,mb_address=:col6,mb_point=:col7,mb_profileimg=:col8,mb_level=:col9,mb_email=:col10,mb_email_chk=:col11,mb_1=:col12,mb_2=:col13,mb_3=:col14,mb_4=:col15,mb_5=:col16,mb_6=:col17,mb_7=:col18,mb_8=:col19,mb_9=:col20,mb_10=:col21,mb_exp=:col22
+                WHERE mb_adm!='Y' AND mb_dregdate IS NULL AND mb_idx=:col23
                 ",
                 array(
-                    $req['pwd'], $req['name'], $req['gender'], $req['phone'], $req['telephone'], $req['point'], $profileimg_name, $req['level'], $req['email'], $req['email_chk'], $req['mb_1'], $req['mb_2'], $req['mb_3'], $req['mb_4'], $req['mb_5'], $req['mb_6'], $req['mb_7'], $req['mb_8'], $req['mb_9'], $req['mb_10'], $mb_exp, $req['idx']
+                    $req['pwd'], $req['name'], $req['gender'], $req['phone'], $req['telephone'], $req['address1'].'|'.$req['address2'].'|'.$req['address3'], $req['point'], $profileimg_name, $req['level'], $req['email'], $req['email_chk'], $req['mb_1'], $req['mb_2'], $req['mb_3'], $req['mb_4'], $req['mb_5'], $req['mb_6'], $req['mb_7'], $req['mb_8'], $req['mb_9'], $req['mb_10'], $mb_exp, $req['idx']
                 )
             );
 
@@ -682,11 +690,11 @@ class Modify_submit {
             $sql->query(
                 "
                 UPDATE {$sql->table("member")}
-                SET mb_pwd=:col1,mb_name=:col2,mb_gender=:col3,mb_phone=:col4,mb_telephone=:col5,mb_point=:col6,mb_profileimg=:col7,mb_level=:col8,mb_email=:col9,mb_email_chk=:col10,mb_1=:col11,mb_2=:col12,mb_3=:col13,mb_4=:col14,mb_5=:col15,mb_6=:col16,mb_7=:col17,mb_8=:col18,mb_9=:col19,mb_10=:col20,mb_exp=:col21
-                WHERE mb_adm!='Y' AND mb_dregdate IS NULL AND mb_idx=:col22
+                SET mb_pwd=:col1,mb_name=:col2,mb_gender=:col3,mb_phone=:col4,mb_telephone=:col5,mb_address=:col6,mb_point=:col7,mb_profileimg=:col8,mb_level=:col9,mb_email=:col10,mb_email_chk=:col11,mb_1=:col12,mb_2=:col13,mb_3=:col14,mb_4=:col15,mb_5=:col16,mb_6=:col17,mb_7=:col18,mb_8=:col19,mb_9=:col20,mb_10=:col21,mb_exp=:col22
+                WHERE mb_adm!='Y' AND mb_dregdate IS NULL AND mb_idx=:col23
                 ",
                 array(
-                    $arr['mb_pwd'], $req['name'], $req['gender'], $req['phone'], $req['telephone'], $req['point'], $profileimg_name, $req['level'], $req['email'], $req['email_chk'], $req['mb_1'], $req['mb_2'], $req['mb_3'], $req['mb_4'], $req['mb_5'], $req['mb_6'], $req['mb_7'], $req['mb_8'], $req['mb_9'], $req['mb_10'], $mb_exp, $req['idx']
+                    $arr['mb_pwd'], $req['name'], $req['gender'], $req['phone'], $req['telephone'], $req['address1'].'|'.$req['address2'].'|'.$req['address3'], $req['point'], $profileimg_name, $req['level'], $req['email'], $req['email_chk'], $req['mb_1'], $req['mb_2'], $req['mb_3'], $req['mb_4'], $req['mb_5'], $req['mb_6'], $req['mb_7'], $req['mb_8'], $req['mb_9'], $req['mb_10'], $mb_exp, $req['idx']
                 )
             );
 

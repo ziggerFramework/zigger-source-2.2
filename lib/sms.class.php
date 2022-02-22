@@ -111,6 +111,7 @@ class Sms {
         if (count($this->attach) >= 1) {
             for ($i = 0; $i < count($this->attach); $i++) {
                 if (!file_exists($this->attach[$i])) {
+                    $this->sendType = 'lms';
                     continue;
                 }
                 $arr[] = array(
@@ -194,7 +195,7 @@ class Sms {
         if (!$CONF['sms_key1'] || !$CONF['sms_key2'] || !$CONF['sms_key3'] || !$CONF['sms_key4']) {
             return false;
         }
-        
+
         $this->setCommonHeader();
 
         $ch = curl_init();

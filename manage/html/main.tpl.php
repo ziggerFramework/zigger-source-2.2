@@ -166,7 +166,7 @@
                                 ?>
                                 <tr class="<?php echo $chked_cls; ?>">
                                     <td class="tac"><strong><?php echo $list['msg_from']; ?></strong></td>
-                                    <td><a href="#" target="_blank" class="view-feed-link" data-feed-idx="<?php echo $list['idx']; ?>" data-feed-href="<?php echo $list['href']; ?>"><?php echo $chked_em; ?><?php echo $list['memo']; ?></a></td>
+                                    <td><a href="#" target="_blank" class="view-feed-link" data-feed-idx="<?php echo $list['idx']; ?>" data-feed-href="<?php echo PH_DIR; ?><?php echo $list['href']; ?>"><?php echo $chked_em; ?><?php echo $list['memo']; ?></a></td>
                                     <td class="tac"><?php echo $list['regdate']; ?></td>
                                 </tr>
                                 <?php } ?>

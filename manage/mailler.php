@@ -540,7 +540,7 @@ class Send_submit{
             );
 
             if ($sql->getcount() < 1) {
-                Valid::error('', '존 재하지 않는 회원 id 입니다.');
+                Valid::error('', '존재하지 않는 회원 id 입니다.');
             }
             if (!$sql->fetch('mb_email')) {
                 Valid::error('', '회원 email이 등록되어 있지 않습니다.');

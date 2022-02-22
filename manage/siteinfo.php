@@ -23,7 +23,8 @@ class Info extends \Controller\Make_Controller {
         {
             $setarr = array(
                 'Y' => '',
-                'N' => ''
+                'N' => '',
+                'O' => ''
             );
             foreach ($setarr as $key => $value) {
                 if ($key == $arr[$val] || ($key == 'N' && !$arr[$val])) {
@@ -49,7 +50,7 @@ class Info extends \Controller\Make_Controller {
         $manage = new ManageFunc();
         $sql = new Pdosql();
 
-        $manage->make_target('사이트 기본 정보|정책 및 약관|여분필드');
+        $manage->make_target('사이트 기본 정보|회원가입 입력 항목 설정|정책 및 약관|여분필드');
 
         $sql->query(
             "
@@ -124,6 +125,11 @@ class Info extends \Controller\Make_Controller {
         $this->set('print_target', $manage->print_target());
         $this->set('use_mobile', set_checked($arr, 'use_mobile'));
         $this->set('use_emailchk', set_checked($arr, 'use_emailchk'));
+        $this->set('use_mb_phone', set_checked($arr, 'use_mb_phone'));
+        $this->set('use_phonechk', set_checked($arr, 'use_phonechk'));
+        $this->set('use_mb_telephone', set_checked($arr, 'use_mb_telephone'));
+        $this->set('use_mb_address', set_checked($arr, 'use_mb_address'));
+        $this->set('use_mb_gender', set_checked($arr, 'use_mb_gender'));
         $this->set('mb_division', mb_division($arr));
         $this->set('write', $write);
     }
@@ -152,7 +158,7 @@ class Info_submit {
 
         Method::security('referer');
         Method::security('request_post');
-        $req = Method::request('post', 'title, domain, description, use_mobile, use_emailchk, email, tel, mb_division, theme, privacy, policy, favicon_del, uploaded_favicon, logo_del, uploaded_logo, st_1, st_2, st_3, st_4, st_5, st_6, st_7, st_8, st_9, st_10, st_exp');
+        $req = Method::request('post', 'title, domain, description, use_mobile, use_emailchk, email, tel, mb_division, theme, privacy, policy, favicon_del, uploaded_favicon, logo_del, uploaded_logo, use_mb_phone, use_phonechk, use_mb_telephone, use_mb_address, use_mb_gender, st_1, st_2, st_3, st_4, st_5, st_6, st_7, st_8, st_9, st_10, st_exp');
         $file = Method::request('file', 'favicon, logo');
         $manage->req_hidden_inp('post');
 
@@ -243,6 +249,14 @@ class Info_submit {
             $logo_name = $arr['logo'];
         }
 
+        if ($req['use_phonechk'] == 'Y' && $arr['use_sms'] != 'Y') {
+            Valid::error('use_phonechk', 'SMS 문자 발송 기능이 활성화되지 않아 휴대전화 인증을 사용할 수 없습니다.');
+        }
+
+        if ($req['use_mb_phone'] == 'N' && $req['use_phonechk'] == 'Y') {
+            Valid::error('use_phonechk', '휴대전화 입력이 활성화되지 않아 휴대전화 인증을 사용할 수 없습니다.');
+        }
+
         $mb_division = implode('|', $req['mb_division']);
         $st_exp = $sql->etcfd_exp(implode('|', $req['st_exp']));
 
@@ -259,6 +273,11 @@ class Info_submit {
             'mb_division' => $mb_division,
             'privacy' => $req['privacy'],
             'policy' => $req['policy'],
+            'use_mb_phone' => $req['use_mb_phone'],
+            'use_phonechk' => $req['use_phonechk'],
+            'use_mb_telephone' => $req['use_mb_telephone'],
+            'use_mb_address' => $req['use_mb_address'],
+            'use_mb_gender' => $req['use_mb_gender'],
             'st_1' => $req['st_1'],
             'st_2' => $req['st_2'],
             'st_3' => $req['st_3'],
@@ -330,7 +349,7 @@ class Plugins extends \Controller\Make_Controller {
         $manage = new ManageFunc();
         $sql = new Pdosql();
 
-        $manage->make_target('reCaptcha 연동|SNS 로그인 API 관리|외부 SMTP(메일서버) 연동|Object Storage(AWS S3) 연동|SMS 문자발송(NCP SENS) 연동');
+        $manage->make_target('Google reCaptcha 연동|SNS 로그인 API 관리|외부 SMTP(메일서버) 연동|Object Storage(AWS S3) 연동|SMS 문자발송(NCP SENS) 연동');
 
         $sql->query(
             "
@@ -536,6 +555,9 @@ class Plugins_submit {
         if ($req['use_feedsms'] == 'Y') {
             if ($req['use_sms'] != 'Y') {
                 Valid::error($req['use_sms'], '피드 SMS 발송을 위해선 SMS가 활성화 되어야 합니다.');
+            }
+            if (!$req['sms_toadm']) {
+                Valid::error($req['sms_toadm'], '피드 SMS 발송을 위해선 수신 받을 연락처가 입력 되어야 합니다.');
             }
         }
 
